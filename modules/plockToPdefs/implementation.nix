@@ -51,7 +51,7 @@
   # In the beta repository `github:aameen-tulip/at-node-nix' there is an
   # implementation which uses the `builtins:fetchurl' to purely convert SHA1 or
   # SHA512 to SHA256, but that has not been migrated at this time.
-  #, integrity
+  , integrity
   #, sha1
   , link
   , hasInstallScript
@@ -86,7 +86,7 @@
       rev        = let
         m = builtins.match "[^#]+#([[:xdigit:]]{40})" resolved;
       in builtins.head m;
-    } else { inherit type; url = resolved; };
+    } else { inherit type; url = resolved; narHash = integrity; };
     depInfo' = if ( ! config.includePins ) || link then {} else {
       depInfo = builtins.mapAttrs ( _: pin: { inherit pin; } )
                                   config.scopes.${plentKey}.pins;
