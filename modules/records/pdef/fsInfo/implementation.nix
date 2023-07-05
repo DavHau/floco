@@ -19,10 +19,7 @@
       builtins.pathExists ( config.metaFiles.pjsDir + "/binding.gyp" )
     );
 
-    fsInfo.shrinkwrap = lib.mkDefault (
-      if config.deserialized then false else
-      builtins.pathExists ( config.metaFiles.pjsDir + "/npm-shrinkwrap.json" )
-    );
+    fsInfo.shrinkwrap = lib.mkDefault false;
 
     _export = let
       subs = options.fsInfo.type.getSubOptions [];

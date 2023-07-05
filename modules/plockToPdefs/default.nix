@@ -3,7 +3,6 @@
   imports = [
     ../plock
     ../records
-    ../fetchers
     ../pdefs
     ./interface.nix ./implementation.nix
   ];

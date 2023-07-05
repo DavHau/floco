@@ -14,7 +14,7 @@ in {
 
   _file = "<floco>/records/implementation.nix";
 
-  imports = [../fetchers];
+  imports = [];
 
 # ---------------------------------------------------------------------------- #
 

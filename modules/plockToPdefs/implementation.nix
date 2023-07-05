@@ -23,7 +23,7 @@
 
   nt = lib.types;
 
-  inherit (config) lockDir fetchers plock;
+  inherit (config) lockDir plock;
 
 
 # ---------------------------------------------------------------------------- #
@@ -92,12 +92,10 @@
                                   config.scopes.${plentKey}.pins;
     };
   in depInfo' // {
-    inherit ident version key ltype;
+    inherit fetchInfo ident version key ltype;
     binInfo.binPairs  = bin;
     fsInfo            = { inherit gypfile; dir = "."; };
     lifecycle.install = hasInstallScript;
-    fetchInfo = if fetchInfo ? path then fetchInfo else
-                fetchers."fetchTree_${fetchInfo.type}".lockFetchInfo fetchInfo;
     fetcher =
       if fetchInfo ? path then "path" else "fetchTree_${fetchInfo.type}";
     metaFiles = {

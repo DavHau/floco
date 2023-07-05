@@ -44,13 +44,6 @@ in {
   in lib.mkOverride 1400 withOv;
   config._module.args.floco = {
     pdefs    = {};
-    fetchers = ( lib.evalModules {
-      modules = [
-        ../../fetchers
-        { config._module.args = { inherit pkgs; }; }
-      ];
-      specialArgs = { inherit lib; };
-    } ).config.fetchers;
     buildPlan.deriveTreeInfo = false;
   };
 
@@ -62,7 +55,6 @@ in {
     config._export =
       lib.mkDerivedConfig options.depInfo lib.libfloco.depInfoSerialize;
     config._module.args.pkgs     = lib.mkOverride 999  pkgs;
-    config._module.args.fetchers = lib.mkOverride 999  floco.fetchers;
     config._module.args.pdefs    = lib.mkOverride 1001 floco.pdefs;
     config._module.args.basedir  = lib.mkOverride 999  floco.settings.basedir;
 

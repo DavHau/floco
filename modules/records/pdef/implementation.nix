@@ -9,7 +9,6 @@
 , options
 , config
 , pkgs
-, fetchers
 , pdefs
 , basedir
 , deriveTreeInfo
@@ -44,27 +43,27 @@ in {
   options.fetcher = lib.mkOption {
     internal = true;
     visible  = false;
-    type     = nt.enum ( builtins.attrNames ( removeAttrs fetchers ["pure"] ) );
+    type     = nt.str;
     default  = "composed";
   };
 
   options.fetchInfo = let
-    mkFetchInfoType = fetcher: let
-      coerce = _file: fi: fetcher.deserializeFetchInfo _file fi;
-    in ( nt.coercedTo nt.str ( coerce "<phony>" ) fetcher.fetchInfo ) // {
-      inherit (fetcher.fetchInfo) description __toString name;
-      inherit (nt.either nt.str fetcher.fetchInfo) check;
-      substSubModules = m: mkFetchInfoType ( fetcher // {
-        fetchInfo = fetcher.fetchInfo.substSubModules m;
-      } );
-      merge = loc: defs: let
-        coerced = map ( { file, value, ... } @ def: def // {
-          value = if builtins.isAttrs value then value else
-                  fetcher.deserializeFetchInfo file value;
-        } ) defs;
-      in fetcher.fetchInfo.merge loc coerced;
-    };
-  in lib.mkOption { type = mkFetchInfoType fetchers.${config.fetcher}; };
+    # mkFetchInfoType = fetcher: let
+    #   coerce = _file: fi: fetcher.deserializeFetchInfo _file fi;
+    # in ( nt.coercedTo nt.str ( coerce "<phony>" ) fetcher.fetchInfo ) // {
+    #   inherit (fetcher.fetchInfo) description __toString name;
+    #   inherit (nt.either nt.str fetcher.fetchInfo) check;
+    #   substSubModules = m: mkFetchInfoType ( fetcher // {
+    #     fetchInfo = fetcher.fetchInfo.substSubModules m;
+    #   } );
+    #   merge = loc: defs: let
+    #     coerced = map ( { file, value, ... } @ def: def // {
+    #       value = if builtins.isAttrs value then value else
+    #               fetcher.deserializeFetchInfo file value;
+    #     } ) defs;
+    #   in fetcher.fetchInfo.merge loc coerced;
+    # };
+  in lib.mkOption { type = nt.attrs;};
 
 
 # ---------------------------------------------------------------------------- #
@@ -143,13 +142,13 @@ in {
       } // ( config.metaFiles.metaRaw.fetchInfo or {} ) );
     in lib.mkDefault default;
 
-    sourceInfo = let
-      type    = config.fetchInfo.type or "path";
-      fetched = fetchers.${config.fetcher}.function config.fetchInfo;
-      src     = if type != "file" then fetched else builtins.fetchTarball {
-        url = "file:${builtins.unsafeDiscardStringContext fetched}";
-      };
-    in lib.mkDefault ( if type == "file" then { outPath = src; } else src );
+    # sourceInfo = let
+    #   type    = config.fetchInfo.type or "path";
+    #   fetched = fetchers.${config.fetcher}.function config.fetchInfo;
+    #   src     = if type != "file" then fetched else builtins.fetchTarball {
+    #     url = "file:${builtins.unsafeDiscardStringContext fetched}";
+    #   };
+    # in lib.mkDefault ( if type == "file" then { outPath = src; } else src );
 
 
 # ---------------------------------------------------------------------------- #
@@ -163,22 +162,22 @@ in {
 
 # ---------------------------------------------------------------------------- #
 
-    metaFiles.pjsDir = let
-      dp  =
-        if ! ( builtins.elem ( config.fsInfo.dir or "." ) ["." "./." "" null] )
-        then "/" + config.fsInfo.dir
-        else "";
-      projDir = config.fetchInfo.path or config.sourceInfo.outPath;
-    in lib.mkDefault (
-      if ! config.deserialized then projDir + dp else
-      throw ( "floco: `${config.key}' attempting to reference " +
-              "`metaFiles.pjsDir' from deserialized form." )
-    );
+    # metaFiles.pjsDir = let
+    #   dp  =
+    #     if ! ( builtins.elem ( config.fsInfo.dir or "." ) ["." "./." "" null] )
+    #     then "/" + config.fsInfo.dir
+    #     else "";
+    #   projDir = config.fetchInfo.path or config.sourceInfo.outPath;
+    # in lib.mkDefault (
+    #   if ! config.deserialized then projDir + dp else
+    #   throw ( "floco: `${config.key}' attempting to reference " +
+    #           "`metaFiles.pjsDir' from deserialized form." )
+    # );
 
-    metaFiles.pjs = let
-      pjsPath = config.metaFiles.pjsDir + "/package.json";
-      pjs     = lib.importJSON pjsPath;
-    in lib.mkDefault ( if config.deserialized then {} else pjs );
+    # metaFiles.pjs = let
+    #   pjsPath = config.metaFiles.pjsDir + "/package.json";
+    #   pjs     = lib.importJSON pjsPath;
+    # in lib.mkDefault ( if config.deserialized then {} else pjs );
 
 
 # ---------------------------------------------------------------------------- #
@@ -190,9 +189,7 @@ in {
   _export = lib.mkMerge [
     {
       inherit (config) ident version ltype;
-      fetchInfo =
-        fetchers.${config.fetcher}.serializeFetchInfo basedir
-                                                      config.fetchInfo;
+      fetchInfo = config.fetchInfo;
     }
     ( lib.mkIf ( config.key != "${config.ident}/${config.version}" ) {
       inherit (config) key;

@@ -64,45 +64,45 @@ in {
 
 # ---------------------------------------------------------------------------- #
 
-    sourceInfo = lib.mkOption {
-      description = lib.mdDoc ''
-        Information about the source tree a package resides in.
-        This record is analogous to that returned by `builtins.fetchTree` for
-        flake inputs.
+    # sourceInfo = lib.mkOption {
+    #   description = lib.mdDoc ''
+    #     Information about the source tree a package resides in.
+    #     This record is analogous to that returned by `builtins.fetchTree` for
+    #     flake inputs.
 
-        Used in combination with `fetchInfo` and `fsInfo.dir`, these three
-        nuggets of metadata are isomorphic with a flake input.
+    #     Used in combination with `fetchInfo` and `fsInfo.dir`, these three
+    #     nuggets of metadata are isomorphic with a flake input.
 
-        However, unlike flake inputs, `sourceInfo.outPath` may set to a derived
-        store path if and only if `fetchInfo` is explicitly set to `null`.
-        In this case `fsInfo.dir` is still used to identify a package/module's
-        root directory where we will attempt to read `package.json`
-        ( must exist ) and similar metadata files will be read from
-        ( if they exist ).
+    #     However, unlike flake inputs, `sourceInfo.outPath` may set to a derived
+    #     store path if and only if `fetchInfo` is explicitly set to `null`.
+    #     In this case `fsInfo.dir` is still used to identify a package/module's
+    #     root directory where we will attempt to read `package.json`
+    #     ( must exist ) and similar metadata files will be read from
+    #     ( if they exist ).
 
-        In this case you may avoid `IFD` by explicitly setting top level fields,
-        specifically `lifecycle`, `sysInfo`, `binInfo`, and `treeInfo` or
-        `depInfo` which are required by builders.
+    #     In this case you may avoid `IFD` by explicitly setting top level fields,
+    #     specifically `lifecycle`, `sysInfo`, `binInfo`, and `treeInfo` or
+    #     `depInfo` which are required by builders.
 
-        Alternatively you may explicitly set `metaFiles.{pjs,plock,plent,trees}`
-        fields directly - but keep in mind that these fields are never
-        guaranteed to be stable and their schema may change at any time
-        ( so set the top level ones unless you`re up for the maintenance ).
-      '';
-      type = nt.submodule {
-        freeformType = nt.attrsOf ( nt.oneOf [nt.bool nt.int nt.str] );
-        options.outPath = lib.mkOption {
-          description = ''
-            A Nix Store path containing the unpacked source tree in which this
-            package/module resides.
-            The package need not be at the root this path; but when the project
-            root is a subdir the option `fsInfo.dir` must be set in order for
-            `package.json` and other metadata to be translated.
-          '';
-          type = nt.path;
-        };
-      };
-    };
+    #     Alternatively you may explicitly set `metaFiles.{pjs,plock,plent,trees}`
+    #     fields directly - but keep in mind that these fields are never
+    #     guaranteed to be stable and their schema may change at any time
+    #     ( so set the top level ones unless you`re up for the maintenance ).
+    #   '';
+    #   type = nt.submodule {
+    #     freeformType = nt.attrsOf ( nt.oneOf [nt.bool nt.int nt.str] );
+    #     options.outPath = lib.mkOption {
+    #       description = ''
+    #         A Nix Store path containing the unpacked source tree in which this
+    #         package/module resides.
+    #         The package need not be at the root this path; but when the project
+    #         root is a subdir the option `fsInfo.dir` must be set in order for
+    #         `package.json` and other metadata to be translated.
+    #       '';
+    #       type = nt.path;
+    #     };
+    #   };
+    # };
 
 
 # ---------------------------------------------------------------------------- #
@@ -164,30 +164,30 @@ in {
 
 # ---------------------------------------------------------------------------- #
 
-          pjs = lib.mkOption {
-            description = lib.mdDoc "Raw contents of `package.json`.";
-            type        = nt.attrsOf nt.anything;
-            internal    = true;
-          };
+          # pjs = lib.mkOption {
+          #   description = lib.mdDoc "Raw contents of `package.json`.";
+          #   type        = nt.attrsOf nt.anything;
+          #   internal    = true;
+          # };
 
-          pjsDir = lib.mkOption {
-            description = lib.mdDoc ''
-              Path to the directory containing `package.json`.
-              We require this path so that we can fetch source trees declared as
-              relative paths in the `package.json` under `dependencies` ( and
-              similar ) and `workspaces` fields.
+          # pjsDir = lib.mkOption {
+          #   description = lib.mdDoc ''
+          #     Path to the directory containing `package.json`.
+          #     We require this path so that we can fetch source trees declared as
+          #     relative paths in the `package.json` under `dependencies` ( and
+          #     similar ) and `workspaces` fields.
 
-              NOTE: If your `package.json` contains `../*` relative paths it is
-              strongly recommended that this option be set to a non-store path.
-              If a store path such as `/nix/store/xxxxx-source/../some-dir` is
-              given, Nix will crash and burn attempting to fetch `some-dir`.
-              A common trick to ensure that you are passing a regular filesystem
-              path is to stringize as: `pjsDir = toString ./.;`.
-            '';
-            type     = nt.path;
-            example  = toString ./my-project;
-            internal = true;
-          };
+          #     NOTE: If your `package.json` contains `../*` relative paths it is
+          #     strongly recommended that this option be set to a non-store path.
+          #     If a store path such as `/nix/store/xxxxx-source/../some-dir` is
+          #     given, Nix will crash and burn attempting to fetch `some-dir`.
+          #     A common trick to ensure that you are passing a regular filesystem
+          #     path is to stringize as: `pjsDir = toString ./.;`.
+          #   '';
+          #   type     = nt.path;
+          #   example  = toString ./my-project;
+          #   internal = true;
+          # };
 
           pjsKey = lib.mkOption {
             description = lib.mdDoc ''

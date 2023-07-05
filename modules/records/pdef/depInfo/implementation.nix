@@ -24,7 +24,7 @@
     get = f:
       if ( config.metaFiles.${f} or {} ) == null then {} else
       take config.metaFiles.${f};
-  in ( get "pjs" ) // ( get "plent" ) // ( get "ylent" ) // ( get "metaRaw" );
+  in ( get "plent" ) // ( get "ylent" ) // ( get "metaRaw" );
 
 
 # ---------------------------------------------------------------------------- #

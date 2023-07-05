@@ -33,7 +33,7 @@ in {
             };
           in basedir' // {
             inherit pkgs;
-            inherit (config) fetchers pdefs;
+            inherit (config) pdefs;
             inherit (config.buildPlan) deriveTreeInfo;
           };
           # Priority prefers low numbers - "low priority" means "big number",
